@@ -37,6 +37,7 @@ magmaInput.Cv_c = 1200;   % [J/(kg*K)], crystal specific heat
 magmaInput.Cv_m = 1200;   % [J/(kg*K)], melt specific heat
 magmaInput.Lc = 350000;   % [J/kg], latent heat due crystallization
 magmaInput.tau = 10000;     % [s], relaxation time in the crystallization law
+% [SiO2 TiO2 Al2O3 FeO(T) MnO MgO CaO Na2O K2O P2O5 H2O F2O-1]
 % magmaInput.oxides_composition = [70.61 0.28 17.43 1.44 0.01 0.33 1.95 5.06 2.79 0.04 0.01 0];
 magmaInput.oxides_composition = [64.6  0.53 16.5  4.47 0.01 2.39 5.23 4.49 1.54 0.04 0.01 0];
 alphaTemp = 10;  % [J/(m^2*K)]
