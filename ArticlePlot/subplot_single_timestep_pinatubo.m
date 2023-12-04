@@ -25,7 +25,7 @@ mkdir(save_dir);
 
 %% Base case
 sim_dir = 'simID_143001';
-timestep = 600;
+timestep = 500;
 xLim = [-35, -5];
 
 markers = {'o', '^'};

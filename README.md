@@ -1,34 +1,14 @@
-# MAGMA DIKES
+# Ascent of volatile-rich felsic magma in dikes
 
-## Naming conventions
-- **camelCase** for variables
-- **UpperCase** for class and structures
-- **under_scores** for function, e.g. solve_lubrication(..)
+## References
+- 
 
-## Custom structures
-### Mesh
-- **xc** - coordinates of the center of the mesh elements
-- **leftBoundary** - coordinates of the mesh elements left boundary
-- **rightBoundary** - coordinates of the mesh elements right boundary
-- **dx** - mesh elements width
-- **n** - number of mesh elements
+## Instruction
+1. Run script **initialize_repo.m** to identify all scripts in matlab
+2. Run input generator (*input* folder)
 
-### Reservoir
-- **E** - Young's modulus
-- **nu** - Poisson's coefficient
-- **toughness** - kIC
-- **leakoff** - Carter's leakoff coefficient
-- **Ep**
-- **Kp**
-- **Cp**
-- **mu** - viscosity of fluid (magma)
-- **mup**
+|filename|pdpath0.1.mat| pdpath0.2.mat| pdpath0.3.mat| pdpath0.4.mat| pdpath0.5.mat| pdpath0.6.mat| pdpath0.7.mat| pdpath0.8.mat| pdpath0.9.mat| pdpath1.0.mat|
+|---|---|---|---|---|---|---|---|---|---|---|
+|Dissolved water, %|2.37| 3.85| 5.13| 6.23| 8.13| 9.62| 11.15| 12.97| 15.36| 19.02|
 
-## Filepaths and folders
-Name of file path or folder should be relative (for compatibility in different platforms and devices). For this purpose use next commands:
-- pwd
-- fullfile
-- genpath
-
-## Comments in matlab code
-- The end lines in nested loops can have identifying comments
+3. Define generated **simID** into **runner.m** (11 and 12 code lines)
