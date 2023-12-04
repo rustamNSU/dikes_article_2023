@@ -1,0 +1,19 @@
+tablepath = fullfile('crystallizationMaxWidth.csv');
+data = importdata(tablepath);
+
+data.data = data.data(3:end, :);
+time = data.data(:, 16)';
+T  = data.data(:, 6)' - 273.15;
+TL = data.data(:, 7)' - 273.15;
+TS = data.data(:, 8)' - 273.15;
+Teff = data.data(:, 9)' - 273.15;
+dT = data.data(:, 10)';
+alpha = data.data(:, 11)';
+beta = data.data(:, 12)';
+betaeq = data.data(:, 13)';
+front = data.data(:, 14)';
+velocity = data.data(:, 15)';
+width = data.data(:, 2)';
+pressure = data.data(:, 3)';
+rho = data.data(:, 4)';
+maxX = data.data(:, 17)';
