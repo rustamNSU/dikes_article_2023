@@ -18,11 +18,8 @@ function compute_time_step(startTime, endTime, mesh, reservoir, schedule, settin
     nTipElements = 1;
     statusLubrication.isConvergence = false;
     dt = endTime - startTime;
-    if dt < 1e-3
-        a=10;
-    end
     if dt < 1e-4
-        error('Stop calculation because very small timestep');
+        error('Stop calculation because very small timestep. Comment out this condition if it is not needed\n');
     end
     dMInjected = schedule.injected_mass(startTime, endTime);
     
@@ -32,23 +29,12 @@ function compute_time_step(startTime, endTime, mesh, reservoir, schedule, settin
                 nIter < 2) &&...
            nIter < settings.MAX_NONLINEAR_ITERATION
 
-        meanViscosity = mean(newFrac.mu(newFrac.channel), "all");
-        %% Front update
-        if meanViscosity <= 1e10
-            [sError, nTipElements] = update_survey_distance(startTime, endTime, mesh, reservoir, settings, newFrac, oldFrac);
-            if nTipElements > settings.MAX_TIP_ELEMENTS
-                fprintf(2, 'Limit maximum of new tip elements\n');
-                break
-            end
-            
-            % if (nTipElements > 1 && endTime > 101)
-            %     a = 10;
-            % end
-            %% Tip update
-            update_tip_width(startTime, endTime, mesh, reservoir, settings, newFrac, oldFrac);
-        else
-            sError = 0.0;
+        [sError, nTipElements] = update_survey_distance(startTime, endTime, mesh, reservoir, settings, newFrac, oldFrac);
+        if nTipElements > settings.MAX_TIP_ELEMENTS
+            fprintf(2, 'Limit maximum of new tip elements\n');
+            break
         end
+        update_tip_width(startTime, endTime, mesh, reservoir, settings, newFrac, oldFrac);
         
         %% Lubrication
         statusLubrication = solve_compressibility_lubrication(startTime, endTime, mesh, reservoir, schedule, settings, state, newFrac, oldFrac);

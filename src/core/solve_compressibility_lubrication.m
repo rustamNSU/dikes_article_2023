@@ -35,7 +35,6 @@ function statusLubrication = solve_compressibility_lubrication(startTime, endTim
     perforation = newFrac.perforation;
     mQ = zeros(1, mesh.n);
     mQCrystal = zeros(1, mesh.n);
-    QPerforation = zeros(1, mesh.n);
     mQ(perforation) = dMInjected / length(perforation) / mesh.dx(perforation);
     Ccc = reservoir.elasticityMatrix(channel, channel);
     Cct = reservoir.elasticityMatrix(channel, tip);
@@ -49,11 +48,6 @@ function statusLubrication = solve_compressibility_lubrication(startTime, endTim
     wIterChannel = wNewChannel;
     rhoIterChannel = rhoNewChannel;
     statusLubrication.hasNegativeWidth = false;
-    meanViscosity = mean(newFrac.mu(channel), "all");
-    % maxiterifmeanvisc = 10;
-    % if meanViscosity > 1e12
-    %     settings.MAX_LUBRICATION_ITERATION = maxiterifmeanvisc;
-    % end
     
     while (solError > settings.LUBRICATION_TOLERANCE &&...
            iter < settings.MAX_LUBRICATION_ITERATION)
@@ -84,13 +78,12 @@ function statusLubrication = solve_compressibility_lubrication(startTime, endTim
         
         %% Find mass rate and flux velocity
         find_mass_rate(newFrac, oldFrac, mesh, mQ, dt);
-               
         globalTIter = newFrac.temperature;
         if not(settings.IS_CONSTANT_TEMPERATURE) 
             solve_energy_conservation(mesh, newFrac, oldFrac,...
             dt, mQ, mQCrystal, reservoir, settings, state);
+            newFrac.temperature = widthRelaxation * newFrac.temperature + (1.0 - widthRelaxation) * globalTIter;
         end
-        newFrac.temperature = widthRelaxation * newFrac.temperature + (1.0 - widthRelaxation) * globalTIter;
 
         %% Update pressure
         pressureChannel = (Ccc * wNewChannel' + Cct * wNewTip')' + sigmaHc;
@@ -104,15 +97,17 @@ function statusLubrication = solve_compressibility_lubrication(startTime, endTim
         newFrac.pressure(tip) = newFrac.pressure(correctionInTip);
         
         %% Update magma state in fracture (set neighbor survey element data in tip)
-        state.updateDensityAndViscosity(newFrac, oldFrac, startTime, endTime, mQ, settings);
-
-        rhoNewChannel  = newFrac.rho(channel);
-        rhoNewTip      = newFrac.rho(tip);
-        rhoError       = norm(rhoNewChannel - rhoIterChannel, Inf) / norm(rhoIterChannel, Inf);
-        rhoIterChannel = rhoNewChannel;
-        TError = norm(newFrac.temperature(channel) - globalTIter(channel), Inf) / norm(newFrac.temperature(channel), Inf);
+        rhoError = 0;
+        TError = 0;
+        if not(settings.IS_CONSTANT_DENSITY) 
+            state.updateDensityAndViscosity(newFrac, oldFrac, startTime, endTime, mQ, settings);
+            rhoNewChannel  = newFrac.rho(channel);
+            rhoNewTip      = newFrac.rho(tip);
+            rhoError       = norm(rhoNewChannel - rhoIterChannel, Inf) / norm(rhoIterChannel, Inf);
+            rhoIterChannel = rhoNewChannel;
+            TError = norm(newFrac.temperature(channel) - globalTIter(channel), Inf) / norm(newFrac.temperature(channel), Inf);
+        end
         solError = max([widthError, rhoError, TError]);
-        meanViscosity = mean(newFrac.mu(channel), "all");
     end
     
     statusLubrication.iterations = iter;
