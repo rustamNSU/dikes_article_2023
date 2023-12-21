@@ -8,8 +8,8 @@ warning off;
 
 %% Load input data (pre-saved data)
 plotFigure = false;
-inputPath        = 'input/input_simID_1.mat';      % input data
-saveFilename     = 'simID_1';                      % dir path where to save data
+inputPath        = 'input/input_simID_5.mat';      % input data
+saveFilename     = 'simID_5';                      % dir path where to save data
 
 load(inputPath, 'reservoirInput', 'settingsInput', 'xc', 'dx',...
     'timeList', 'dtList', 'xPerforation', 'pumpingSchedule', 'rhoPerforation');
@@ -30,6 +30,7 @@ settings = IlsaSettings(settingsInput);
 settings.simlog = fopen(fullfile(sim_dir, 'simlog.txt'), 'wt');
 fprintf(settings.simlog, 'inputPath = %s\nsaveFilename = %s\n\n', inputPath, saveFilename);
 
+
 %% Magma injection from chamber
 schedule = Schedule(timeList, dtList, pumpingSchedule, xPerforation, rhoPerforation);
 time = schedule.startTime;
@@ -38,10 +39,15 @@ clear timeList dtList pumpingSchedule xPerforation rhoPerforation;
 %% Initialize mesh and reservoir parameters
 mesh = Mesh(xc, dx);
 reservoir = Reservoir(reservoirInput, settings);
+
+if settingsInput.FRACTURE_TYPE == "PKN"
+    settings.FRACTURE_TYPE = "PKN";
+    reservoir.h = reservoirInput.h;
+end
 clear xc dx reservoirInput;
 
 %% Generate elasticity matrix
-reservoir.elasticityMatrix = generate_elasticity_matrix(reservoir.Ep, mesh);
+reservoir.elasticityMatrix = generate_elasticity_matrix(reservoir, mesh, settings);
 
 oldFrac = FractureElements(mesh);
 oldFrac = oldFrac.initialize_zero_fracture(settings, schedule.xPerforation, schedule.startTime);

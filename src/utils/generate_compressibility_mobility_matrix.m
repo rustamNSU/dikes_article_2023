@@ -1,4 +1,4 @@
-function [Acc, Act, Atc, Att] = generate_compressibility_mobility_matrix(mesh, frac)
+function [Acc, Act, Atc, Att] = generate_compressibility_mobility_matrix(mesh, frac, settings)
     %% Fill global mobility matrix
     A = zeros(mesh.n, mesh.n);
     channel = frac.channel;
@@ -28,11 +28,16 @@ function [Acc, Act, Atc, Att] = generate_compressibility_mobility_matrix(mesh, f
         dxl = mesh.dx(element-1);
         dxc = mesh.dx(element);
         dxr = mesh.dx(element+1);
+
+        coef_frac = 12;
+        if settings.FRACTURE_TYPE == "PKN"
+            coef_frac = pi^2;
+        end
     
         
         %% Left tip element (boundary)
         if i==1
-            mobilityR = (rhor*wr3*dxr/mur + rhoc*wc3*dxc/muc) / (dxr+dxc) / (12 * dxc^2);
+            mobilityR = (rhor*wr3*dxr/mur + rhoc*wc3*dxc/muc) / (dxr+dxc) / (coef_frac * dxc^2);
             A(element, element) = -mobilityR;
             A(element, element+1) = mobilityR;
             continue
@@ -41,7 +46,7 @@ function [Acc, Act, Atc, Att] = generate_compressibility_mobility_matrix(mesh, f
         
         %% Right tip element (boundary)
         if i==length(fracElements)
-            mobilityL = (rhol*wl3*dxl/mul + rhoc*wc3*dxc/muc) / (dxl+dxc) / (12 * dxc^2);
+            mobilityL = (rhol*wl3*dxl/mul + rhoc*wc3*dxc/muc) / (dxl+dxc) / (coef_frac * dxc^2);
             A(element, element) = -mobilityL;
             A(element, element-1) = mobilityL;
             continue
@@ -49,8 +54,8 @@ function [Acc, Act, Atc, Att] = generate_compressibility_mobility_matrix(mesh, f
         
         
         %% Inner elements
-        mobilityL = (rhol*wl3*dxl/mul + rhoc*wc3*dxc/muc) / (dxl+dxc) / (12 * dxc^2);
-        mobilityR = (rhor*wr3*dxr/mur + rhoc*wc3*dxc/muc) / (dxr+dxc) / (12 * dxc^2);
+        mobilityL = (rhol*wl3*dxl/mul + rhoc*wc3*dxc/muc) / (dxl+dxc) / (coef_frac * dxc^2);
+        mobilityR = (rhor*wr3*dxr/mur + rhoc*wc3*dxc/muc) / (dxr+dxc) / (coef_frac * dxc^2);
         A(element, element-1) = mobilityL;
         A(element, element) = -(mobilityL + mobilityR);
         A(element, element+1) = mobilityR;

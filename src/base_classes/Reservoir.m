@@ -19,6 +19,7 @@ classdef Reservoir < matlab.mixin.Copyable
         rho
         Ly
         Ny
+        h = 1 % dike breadth
     end
 
     methods(Access = protected)

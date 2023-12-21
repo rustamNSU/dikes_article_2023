@@ -4,6 +4,9 @@ function [sError, nTipElements] = update_survey_distance(startTime, endTime,...
     sNew = newFrac.distanceToSurvey;
     sPrev = sNew;
     w = newFrac.width(newFrac.survey);
+    if settings.FRACTURE_TYPE == "PKN"
+        w = 4 / pi .* w;
+    end
     mu = newFrac.mu(newFrac.survey);
     
     Ep = reservoir.Ep;

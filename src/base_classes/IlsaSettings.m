@@ -28,6 +28,7 @@ classdef IlsaSettings < matlab.mixin.Copyable
         
         IS_HOST_TEMPERATURE_ON
         IS_VARIABLE_HOST_CONDUCTIVITY
+        FRACTURE_TYPE = "KGD" % "KGD", "PKN"
         simlog
     end %properties
 

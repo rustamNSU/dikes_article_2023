@@ -53,7 +53,7 @@ function statusLubrication = solve_compressibility_lubrication(startTime, endTim
            iter < settings.MAX_LUBRICATION_ITERATION)
         mQCrystal(perforation) = newFrac.rhoc(perforation) * mQ(perforation) / newFrac.rho(perforation);
         magmaWeightGlobal = isBuoyancy * reservoir.gravity * newFrac.rho .* mesh.xc;
-        [Acc, Act, Atc, Att] = generate_compressibility_mobility_matrix(mesh, newFrac);
+        [Acc, Act, Atc, Att] = generate_compressibility_mobility_matrix(mesh, newFrac, settings);
         
         %% Solving mass law equation
         M = assemble_full_matrix(Ccc, Acc, Act, Atc, Att, dt, wIterChannel, rhoIterChannel, settings.MIN_WIDTH);
